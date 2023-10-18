@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char pattern[100];
+    char line[100];
+    
+    printf("Enter the pattern to search for: ");
+    fgets(pattern, sizeof(pattern), stdin);
+    // Remove the newline character from the pattern
+    pattern[strcspn(pattern, "\n")] = '\0';
+
+    printf("Enter the text to search in (press Ctrl+D on a new line to end input):\n");
+
+    while (fgets(line, sizeof(line), stdin) != NULL) {
+        if (strstr(line, pattern) != NULL) {
+            printf("%s", line);
+        }
+    }
+
+    return 0;
+}
