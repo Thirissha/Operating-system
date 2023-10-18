@@ -1,0 +1,77 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to sort an array in ascending order
+void sort(int arr[], int n) {
+    int temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Function to implement the SCAN disk scheduling algorithm
+void SCAN(int requestQueue[], int head, int direction, int size) {
+    // Sort the request queue
+    sort(requestQueue, size);
+
+    int seekSequence[size + 1];
+    int seekCount = 0;
+
+    int curTrack = head;
+
+    int left = 0, right = size - 1;
+
+    while (left <= right) {
+        if (direction == 1) {
+            // Move towards the right
+            for (int i = left; i <= right; i++) {
+                if (requestQueue[i] >= curTrack) {
+                    seekSequence[seekCount++] = requestQueue[i];
+                    curTrack = requestQueue[i];
+                }
+            }
+            right--;
+        } else if (direction == -1) {
+            // Move towards the left
+            for (int i = right; i >= left; i--) {
+                if (requestQueue[i] <= curTrack) {
+                    seekSequence[seekCount++] = requestQueue[i];
+                    curTrack = requestQueue[i];
+                }
+            }
+            left++;
+        }
+        direction = -direction;
+    }
+
+    printf("Seek Sequence: ");
+    for (int i = 0; i < seekCount; i++) {
+        printf("%d ", seekSequence[i]);
+    }
+    printf("\n");
+
+    int totalSeekTime = 0;
+    for (int i = 1; i < seekCount; i++) {
+        totalSeekTime += abs(seekSequence[i] - seekSequence[i - 1]);
+    }
+
+    printf("Total seek time: %d\n", totalSeekTime);
+}
+
+int main() {
+    int requestQueue[] = {98, 183, 37, 122, 14, 124, 65, 67};
+    int size = sizeof(requestQueue) / sizeof(requestQueue[0]);
+    int head = 53;
+    int direction = 1;  // 1 for right, -1 for left
+
+    SCAN(requestQueue, head, direction, size);
+
+    return 0;
+}
