@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TOTAL_BLOCKS 100
+#define FILE_COUNT 5
+
+// Data structure to represent a file
+struct File {
+    char name[20];
+    int start_block;
+    int end_block;
+    int size;
+};
+
+// Array to represent the disk blocks
+int disk[TOTAL_BLOCKS];
+
+// Function to initialize the disk
+void initializeDisk() {
+    for (int i = 0; i < TOTAL_BLOCKS; i++) {
+        disk[i] = 0;
+    }
+}
+
+// Function to allocate a file in contiguous blocks
+int allocateFile(struct File file) {
+    int start = file.start_block;
+    int end = file.end_block;
+    
+    for (int i = start; i <= end; i++) {
+        if (disk[i] == 0) {
+            disk[i] = 1;
+        } else {
+            return 0; // Allocation failed
+        }
+    }
+
+    return 1; // Allocation successful
+}
+
+int main() {
+    initializeDisk();
+
+    struct File files[FILE_COUNT] = {
+        {"File1", 0, 4, 5},
+        {"File2", 5, 9, 5},
+        {"File3", 10, 14, 5},
+        {"File4", 15, 19, 5},
+        {"File5", 20, 24, 5}
+    };
+
+    // Allocate files on the disk
+    for (int i = 0; i < FILE_COUNT; i++) {
+        if (allocateFile(files[i])) {
+            printf("File %s allocated successfully from block %d to %d.\n", files[i].name, files[i].start_block, files[i].end_block);
+        } else {
+            printf("File %s allocation failed. Not enough contiguous blocks available.\n", files[i].name);
+        }
+    }
+
+    return 0;
+}
