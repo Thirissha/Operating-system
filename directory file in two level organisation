@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+// Function to move a file to a destination directory
+void moveFile(const char *srcPath, const char *destPath) {
+    if (rename(srcPath, destPath) != 0) {
+        perror("Error moving file");
+    }
+}
+
+// Function to organize files in two directories
+void organizeFiles(const char *sourceDir, const char *destDir1, const char *destDir2) {
+    struct dirent *entry;
+    DIR *dp = opendir(sourceDir);
+
+    if (dp == NULL) {
+        perror("Error opening source directory");
+        return;
+    }
+
+    struct stat st;
+    char srcPath[PATH_MAX];
+    char destPath1[PATH_MAX];
+    char destPath2[PATH_MAX];
+
+    while ((entry = readdir(dp)) != NULL) {
+        if (entry->d_type == DT_REG) {
+            snprintf(srcPath, sizeof(srcPath), "%s/%s", sourceDir, entry->d_name);
+            stat(srcPath, &st);
+
+            // Customize the conditions based on your organization criteria
+            if (S_ISREG(st.st_mode)) {
+                // Organize based on file extensions
+                const char *ext = strrchr(entry->d_name, '.');
+                if (ext) {
+                    if (strcmp(ext, ".txt") == 0) {
+                        snprintf(destPath1, sizeof(destPath1), "%s/%s", destDir1, entry->d_name);
+                        moveFile(srcPath, destPath1);
+                    } else if (strcmp(ext, ".jpg") == 0) {
+                        snprintf(destPath2, sizeof(destPath2), "%s/%s", destDir2, entry->d_name);
+                        moveFile(srcPath, destPath2);
+                    }
+                }
+            }
+        }
+    }
+    closedir(dp);
+}
+
+int main() {
+    const char *sourceDir = "source_directory";
+    const char *destDir1 = "destination_directory1";
+    const char *destDir2 = "destination_directory2";
+
+    // Create destination directories if they don't exist
+    mkdir(destDir1, 0777);
+    mkdir(destDir2, 0777);
+
+    organizeFiles(sourceDir, destDir1, destDir2);
+
+    printf("Files organized successfully.\n");
+
+    return 0;
+}
