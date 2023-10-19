@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+int main() {
+    // Create a file and write to it
+    FILE *file = fopen("file_operations.txt", "w");
+    if (file == NULL) {
+        perror("Error creating file");
+        return 1;
+    }
+
+    fprintf(file, "This is a sample text file.\n");
+    fprintf(file, "File management operations in C.\n");
+    fclose(file);
+
+    // Open the file and read its content
+    file = fopen("file_operations.txt", "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    char buffer[100];
+    printf("Contents of the file:\n");
+    while (fgets(buffer, sizeof(buffer), file)) {
+        printf("%s", buffer);
+    }
+
+    fclose(file);
+
+    // Append additional text to the file
+    file = fopen("file_operations.txt", "a");
+    if (file == NULL) {
+        perror("Error opening file for appending");
+        return 1;
+    }
+
+    fprintf(file, "Appending more text to the file.\n");
+    fclose(file);
+
+    printf("\nFile has been updated with additional text.\n");
+
+    return 0;
+}
