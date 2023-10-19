@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_PAGES 100
+#define MAX_FRAMES 10
+
+int findOptimalPage(int frames[], int pages[], int start, int n) {
+    int res = -1, farthest = start;
+
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        int j;
+        for (j = start; j < n; j++) {
+            if (frames[i] == pages[j]) {
+                if (j > farthest) {
+                    farthest = j;
+                    res = i;
+                }
+                break;
+            }
+        }
+        if (j == n)
+            return i;
+    }
+
+    return (res == -1) ? 0 : res;
+}
+
+void optimalPageReplacement(int pages[], int n, int num_frames) {
+    int frames[MAX_FRAMES];
+    int page_faults = 0;
+
+    for (int i = 0; i < num_frames; i++)
+        frames[i] = -1;
+
+    for (int i = 0; i < n; i++) {
+        int page = pages[i];
+        int alreadyInFrames = 0;
+
+        for (int j = 0; j < num_frames; j++) {
+            if (frames[j] == page) {
+                alreadyInFrames = 1;
+                break;
+            }
+        }
+
+        if (!alreadyInFrames) {
+            int index = findOptimalPage(frames, pages, i + 1, n);
+            frames[index] = page;
+            page_faults++;
+        }
+
+        printf("Page %d: [", page);
+        for (int j = 0; j < num_frames; j++) {
+            if (frames[j] == -1)
+                printf(" -");
+            else
+                printf(" %d", frames[j]);
+        }
+        printf(" ]\n");
+    }
+
+    printf("Total Page Faults: %d\n", page_faults);
+}
+
+int main() {
+    int pages[] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2};
+    int num_frames = 3;
+    int n = sizeof(pages) / sizeof(pages[0]);
+
+    optimalPageReplacement(pages, n, num_frames);
+
+    return 0;
+}
