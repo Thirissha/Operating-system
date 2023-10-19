@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    const char *input_text = "Your input text here"; // Replace with your input text
+    char command[1000];
+    
+    // Construct the grex command
+    snprintf(command, sizeof(command), "grex %s", input_text);
+    
+    // Execute the grex command
+    printf("Executing grex command...\n");
+    int return_code = system(command);
+    
+    if (return_code == 0) {
+        printf("grex command executed successfully.\n");
+    } else {
+        printf("Error executing grex command.\n");
+    }
+    
+    return 0;
+}
